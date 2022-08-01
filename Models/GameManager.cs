@@ -1,12 +1,11 @@
-﻿using System.ComponentModel;
-
+﻿
 namespace FlappyPlane.Web.Game.Models
 {
-    public class GameManager : INotifyPropertyChanged
+    public class GameManager
     {
         private readonly int _gravity = 2;
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event EventHandler? MainLoopCompleted;
 
         public BirdModel Bird { get; set; }
         public PipeModel Pipe { get; set; }
@@ -24,17 +23,14 @@ namespace FlappyPlane.Web.Game.Models
             while(IsRunning)
             {
                 Bird.Fall(_gravity);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Bird)));
-
                 Pipe.Move();
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Pipe)));
-
-
+             
                 if(Bird.DistanceFromGround <= 0)
                 {
                     GameOver();
                 }
-                
+
+                MainLoopCompleted?.Invoke(this, EventArgs.Empty);
                 
                 await Task.Delay(20);
             }
@@ -47,6 +43,14 @@ namespace FlappyPlane.Web.Game.Models
                 Bird = new BirdModel();
                 MainLoop();
             }       
+        }
+
+        public void Jump()
+        {
+            if(IsRunning)
+            {
+                Bird.Jump();
+            }
         }
 
         public void GameOver()
