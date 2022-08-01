@@ -1,5 +1,17 @@
-﻿<h3>GameContainer</h3>
+﻿
+<div class="game-container">
+    <div class="sky">
+        <div class="bird" style="@_birdCss"></div>
+    </div>
+    <div class="ground"></div>
+</div>
 
-@code {
+@code{
+    GameManager _gameManager;
+    string _birdCss => $"bottom: {_gameManager.Bird.DistanceFromGround}px";
 
+    protected override void OnInitialized()
+    {
+        _gameManager = new GameManager();
+    }
 }
