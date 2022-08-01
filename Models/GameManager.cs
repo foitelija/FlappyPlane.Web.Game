@@ -8,13 +8,13 @@ namespace FlappyPlane.Web.Game.Models
         public event EventHandler? MainLoopCompleted;
 
         public BirdModel Bird { get; set; }
-        public PipeModel Pipe { get; set; }
+        public List<PipeModel> Pipes { get; set; }
         public bool IsRunning { get; set; } = false;
 
         public GameManager()
         {
             Bird = new BirdModel();
-            Pipe = new PipeModel();
+            Pipes = new List<PipeModel>();
         }
 
         public async void MainLoop()
@@ -22,13 +22,9 @@ namespace FlappyPlane.Web.Game.Models
             IsRunning = true;
             while(IsRunning)
             {
-                Bird.Fall(_gravity);
-                Pipe.Move();
-             
-                if(Bird.DistanceFromGround <= 0)
-                {
-                    GameOver();
-                }
+                MoveObjects();
+                Collision();
+                ManagePipes();
 
                 MainLoopCompleted?.Invoke(this, EventArgs.Empty);
                 
@@ -41,6 +37,7 @@ namespace FlappyPlane.Web.Game.Models
             if (!IsRunning)
             {
                 Bird = new BirdModel();
+                Pipes = new List<PipeModel>();
                 MainLoop();
             }       
         }
@@ -50,6 +47,33 @@ namespace FlappyPlane.Web.Game.Models
             if(IsRunning)
             {
                 Bird.Jump();
+            }
+        }
+        void Collision()
+        {
+            if (Bird.IsOnGround()) 
+            {
+                GameOver();
+            }
+        }
+
+        void ManagePipes()
+        {
+            if(!Pipes.Any() || Pipes.Last().DistanceFromLeft <= 250)
+            {
+                Pipes.Add(new PipeModel());
+            }
+            if(Pipes.First().OffScreen())
+            {
+                Pipes.Remove(Pipes.First());
+            }
+        }
+        void MoveObjects()
+        {
+            Bird.Fall(_gravity);
+            foreach (var pipe in Pipes)
+            {
+                pipe.Move();
             }
         }
 

@@ -6,6 +6,11 @@
         public int DistanceFromBottom { get; private set; } = new Random().Next(0, 60);
         public int Speed { get; set; } = 2;
 
+        public bool OffScreen()
+        {
+            return DistanceFromLeft <= -60;
+        }
+
         public void Move()
         {
             DistanceFromLeft -= Speed;
