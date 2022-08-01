@@ -55,6 +55,20 @@ namespace FlappyPlane.Web.Game.Models
             {
                 GameOver();
             }
+
+
+            var centeredPipe = Pipes.FirstOrDefault(p => p.isCentered());
+
+            if (centeredPipe != null)
+            {
+                bool hasCollidedBottom = Bird.DistanceFromGround < centeredPipe.GapBottom - 150;
+                bool hasCollidedTop = Bird.DistanceFromGround + 45 > centeredPipe.GapTop - 150;
+
+                if (hasCollidedBottom || hasCollidedTop)
+                {
+                    GameOver();
+                }
+            }
         }
 
         void ManagePipes()
